@@ -31,28 +31,33 @@ snakejs.game = (function() {
     }
     
     function gameLoop() {
-        ctx.clearRect(0,0,snakejs.width,snakejs.height);
-        
-        ctx.rect(0,0,snakejs.width,snakejs.height);
-        ctx.stroke();
-        
-        snake.setMove();
-        if(snake.getHeadPosition()[0] == apple.getPosition()[0] && snake.getHeadPosition()[1] == apple.getPosition()[1]) {
-            apple.setPosition();
-            score++;
-            frameLength = (frameLengthStart - (score*10) > 100) ? (frameLengthStart - (score*10)) : frameLengthMax; 
+        if(!snake.isOver()) {
+            ctx.clearRect(0,0,snakejs.width,snakejs.height);
+
+            ctx.rect(0,0,snakejs.width,snakejs.height);
+            ctx.stroke();
+            snake.setMove();
+            if(snake.getHeadPosition()[0] == apple.getPosition()[0] && snake.getHeadPosition()[1] == apple.getPosition()[1]) {
+                apple.setPosition();
+                score++;
+                frameLength = (frameLengthStart - (score*10) > 100) ? (frameLengthStart - (score*10)) : frameLengthMax; 
+            } else {
+                snake.removeTail();
+            }
+            ctx.fillStyle="#000000";
+            snake.render(ctx);
+            apple.render(ctx);
+
+            ctx.fillStyle="#d3d3d3";
+            ctx.font = "12px Arial";
+            ctx.fillText("Score: " + score, 10, 15);
+
+            ctx.fillStyle="#000000";
+
+            loop = setTimeout(gameLoop, frameLength);
+        } else {
+            gameOver();
         }
-        ctx.fillStyle="#000000";
-        snake.render(ctx);
-        apple.render(ctx);
-        
-        ctx.fillStyle="#d3d3d3";
-        ctx.font = "12px Arial";
-        ctx.fillText("Score: " + score, 10, 15);
-        
-        ctx.fillStyle="#000000";
-        
-        loop = setTimeout(gameLoop, frameLength);
     }
     
     function gameOver(){
@@ -75,14 +80,7 @@ snakejs.snake = function() {
     var snakeArray = [];
     var direction = 2;
     
-    snakeArray.push([7,2]); // x / y coordinates
-    snakeArray.push([6,2]);
-    snakeArray.push([5,2]);
-    snakeArray.push([4,2]);
-    snakeArray.push([3,2]);
-    snakeArray.push([2,2]);
-    snakeArray.push([1,2]);
-    snakeArray.push([0,2]);
+    snakeArray.push([10,10]); // x / y coordinates
     
     var distanceY = 0;
     var distanceX = 1;
@@ -126,15 +124,10 @@ snakejs.snake = function() {
     };
     
     function setMove(){
-        if (!isOver()) {
             var next = snakeArray[0].slice();
             next[0] += distanceX;
             next[1] += distanceY;
             snakeArray.unshift(next);
-            snakeArray.pop();
-        } else {
-            snakejs.game.gameOver();
-        }
     }
     
     function render(ctx){
@@ -169,10 +162,16 @@ snakejs.snake = function() {
         alert(getHeadPosition());
     }
     
+    function removeTail() {
+        snakeArray.pop();
+    }
+    
     return {
         setMove: setMove,
         render: render,
-        getHeadPosition: getHeadPosition
+        getHeadPosition: getHeadPosition,
+        removeTail: removeTail,
+        isOver:isOver
     };
 }
 
