@@ -15,7 +15,7 @@ snakejs.game = (function() {
     var apple;
     var score = 0;
     var frameLength = frameLengthStart;
-    var highScore = localStorage["highscore"];
+    var highScore = (localStorage["highscore"]) ? localStorage["highscore"] : 0;
     
     function init() {
         $('body').append('<canvas id="jsSnake">');
@@ -49,6 +49,8 @@ snakejs.game = (function() {
     }
     function newGame() {
         ctx.clearRect(0,0,snakejs.width,snakejs.height);
+        distanceX = snakejs.snakeBlock;
+        distanceY = 0;
         score = 0;
         frameLength = frameLengthStart;
         highScore = localStorage["highscore"];
@@ -85,6 +87,8 @@ snakejs.game = (function() {
 
             loop = setTimeout(gameLoop, frameLength);
         } else {
+            snake.retreat();
+            snake.render(ctx);
             gameOver();
         }
     }
@@ -112,7 +116,7 @@ snakejs.game = (function() {
     
 snakejs.snake = function() {
     var snakeArray = [];
-    var direction = 2;
+    var previousSnakeArray = [];
     
     snakeArray.push([10,10]); // x / y coordinates
     
@@ -121,44 +125,54 @@ snakejs.snake = function() {
     var xPos = snakejs.width/2;
     var yPos = snakejs.height/2;
     
+    function retreat() {
+        snakeArray = previousSnakeArray.slice();
+    }
+    
     function arrowKeys() {
         switch (window.event.keyCode) {
         case 37:
             //left 
-            if(direction != 2) {
+            if(!isBackwards(-1,0)) {
                 distanceY = 0;
                 distanceX = -1;
-                direction = 4;
             }
             break;
         case 38:
             //up
-            if(direction != 3) {
+            if(!isBackwards(0,-1)) {
                 distanceY = -1;
                 distanceX = 0;    
-                direction = 1;
             }
             break;
         case 39:
             //right
-            if(direction != 4) {
+            if(!isBackwards(1,0)) {
                 distanceY = 0;
                 distanceX = 1;
-                direction = 2;
             }
             break;
         case 40:
             //down
-            if(direction != 1) {
+            if(!isBackwards(0,1)) {
                 distanceY  = 1;
                 distanceX = 0;
-                direction = 3;
             }
             break;
         }
     }
     
+    function isBackwards(x,y) {
+        if(snakeArray.length > 1)
+            if((snakeArray[1][0] == snakeArray[0][0] + x && x != 0) ||
+               (snakeArray[1][1] == snakeArray[0][1] + y && y != 0))
+                return true;
+        return false;
+    }
+    
     function setMove(){
+            previousSnakeArray = snakeArray.slice();
+        
             var next = snakeArray[0].slice();
             next[0] += distanceX;
             next[1] += distanceY;
@@ -207,7 +221,8 @@ snakejs.snake = function() {
         getHeadPosition: getHeadPosition,
         removeTail: removeTail,
         isOver:isOver,
-        arrowKeys: arrowKeys
+        arrowKeys: arrowKeys,
+        retreat: retreat
     };
 }
 
