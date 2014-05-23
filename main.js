@@ -132,6 +132,7 @@ snakejs.snake = function() {
     function arrowKeys() {
         switch (window.event.keyCode) {
         case 37:
+        case 65:
             //left 
             if(!isBackwards(-1,0)) {
                 distanceY = 0;
@@ -139,6 +140,7 @@ snakejs.snake = function() {
             }
             break;
         case 38:
+        case 87:
             //up
             if(!isBackwards(0,-1)) {
                 distanceY = -1;
@@ -146,6 +148,7 @@ snakejs.snake = function() {
             }
             break;
         case 39:
+        case 68:
             //right
             if(!isBackwards(1,0)) {
                 distanceY = 0;
@@ -153,6 +156,7 @@ snakejs.snake = function() {
             }
             break;
         case 40:
+        case 83:
             //down
             if(!isBackwards(0,1)) {
                 distanceY  = 1;
