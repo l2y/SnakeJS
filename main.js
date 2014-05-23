@@ -56,7 +56,7 @@ snakejs.game = (function() {
         highScore = localStorage["highscore"];
         snake = snakejs.snake();
         apple = snakejs.apple();
-        apple.setPosition();   
+        apple.setPosition(snake);   
     }
     
     function gameLoop() {
@@ -67,7 +67,7 @@ snakejs.game = (function() {
             ctx.stroke();
             snake.setMove();
             if(snake.getHeadPosition()[0] == apple.getPosition()[0] && snake.getHeadPosition()[1] == apple.getPosition()[1]) {
-                apple.setPosition();
+                apple.setPosition(snake);
                 score++;
                 frameLength = (frameLengthStart - (score*10) > frameLengthMax) ? (frameLengthStart - (score*10)) : frameLengthMax; 
             } else {
@@ -215,6 +215,15 @@ snakejs.snake = function() {
         snakeArray.pop();
     }
     
+    function onSnake(x,y) {
+        for(var i = 0 ; i < snakeArray.length ; i++) {
+            if (snakeArray[i][0] == x && snakeArray[i][1] == y) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     return {
         setMove: setMove,
         render: render,
@@ -222,7 +231,8 @@ snakejs.snake = function() {
         removeTail: removeTail,
         isOver:isOver,
         arrowKeys: arrowKeys,
-        retreat: retreat
+        retreat: retreat,
+        onSnake: onSnake
     };
 }
 
@@ -230,9 +240,11 @@ snakejs.apple = function() {
     var x;
     var y;
     
-    function setPosition(){
-        x = Math.floor(((Math.random() * snakejs.width) / snakejs.snakeBlock));
-        y = Math.floor(((Math.random() * snakejs.width) / snakejs.snakeBlock));
+    function setPosition(snake){
+        do {
+            x = Math.floor(((Math.random() * snakejs.width) / snakejs.snakeBlock));
+            y = Math.floor(((Math.random() * snakejs.width) / snakejs.snakeBlock));
+        } while(snake.onSnake(x,y));
 
     }
     function render(ctx){
