@@ -1,0 +1,15 @@
+canvas {
+    padding-left: 0;
+    padding-right: 0;
+    margin:auto;
+    margin-top:auto;
+    display: block;
+}
+#header {
+    padding-left: 0;
+    padding-right: 0;
+    margin-right:auto;
+    margin-left:auto;
+    margin-top:auto;
+    display: block;
+}
